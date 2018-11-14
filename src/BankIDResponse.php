@@ -45,7 +45,6 @@ class BankIDResponse
     const RFA21 = 'RFA21';
     const RFA22 = 'RFA22';
 
-    public $orderReference = null;
     public $status = self::STATUS_PENDING;
     public $message = '';
     public $body = null;
