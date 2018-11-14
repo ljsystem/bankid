@@ -32,7 +32,7 @@ class BankID
      * @param null   $rootCertificate
      * @param string $environment
      */
-    public function __construct($certificate, $rootCertificate = null, $environment = self::ENVIRONMENT_PRODUCTION)
+    public function __construct($certificate, $rootCertificate = null, $environment = self::ENVIRONMENT_TEST)
     {
         $httpOptions = [
             'base_uri' => 'https://'.self::ENVIRONMENTS[$environment]['host'].'/rp/v5/',
