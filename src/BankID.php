@@ -57,42 +57,50 @@ class BankID
      *
      * @return BankIDResponse
      */
-    public function authenticate($personalNumber, $orderReference = null)
+    public function authenticate($personalNumber)
     {
-        if (! $orderReference) {
-            try {
-                $httpResponse = $this->httpClient->post('auth', [
-                    RequestOptions::JSON => [
-                        'personalNumber' => $personalNumber,
-                        'endUserIp' => request()->ip(),
-                    ],
-                ]);
-            } catch (RequestException $e) {
-                return self::requestExceptionToBankIDResponse($e);
-            }
+        try {
+            $httpResponse = $this->httpClient->post('auth', [
+                RequestOptions::JSON => [
+                    'personalNumber' => $personalNumber,
+                    'endUserIp' => request()->ip(),
+                ],
+            ]);
+        } catch (RequestException $e) {
+            return self::requestExceptionToBankIDResponse($e);
+        }
 
-            $httpResponseBody = json_decode($httpResponse->getBody());
+        $httpResponseBody = json_decode($httpResponse->getBody());
 
-            return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
-        } else {
-            try {
-                $httpResponse = $this->httpClient->post('collect', [
-                    RequestOptions::JSON => [
-                        'orderRef' => $orderReference,
-                    ],
-                ]);
-            } catch (RequestException $e) {
-                return self::requestExceptionToBankIDResponse($e);
-            }
+        return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
+    }
 
-            $httpResponseBody = json_decode($httpResponse->getBody());
+    /**
+     * Collect an ongoing user request.
+     *
+     * @param $orderReference
+     *
+     * @return BankIDResponse
+     */
+    public function collect($orderReference)
+    {
+        try {
+            $httpResponse = $this->httpClient->post('collect', [
+                RequestOptions::JSON => [
+                    'orderRef' => $orderReference,
+                ],
+            ]);
+        } catch (RequestException $e) {
+            return self::requestExceptionToBankIDResponse($e);
+        }
 
-            switch ($httpResponseBody->status) {
-                case BankIDResponse::STATUS_COMPLETE:
-                    return new BankIDResponse(BankIDResponse::STATUS_COMPLETE, $httpResponseBody);
-                default:
-                    return new BankIDResponse($httpResponseBody->status, $httpResponseBody);
-            }
+        $httpResponseBody = json_decode($httpResponse->getBody());
+
+        switch ($httpResponseBody->status) {
+            case BankIDResponse::STATUS_COMPLETE:
+                return new BankIDResponse(BankIDResponse::STATUS_COMPLETE, $httpResponseBody);
+            default:
+                return new BankIDResponse($httpResponseBody->status, $httpResponseBody);
         }
     }
 
