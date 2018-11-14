@@ -45,9 +45,9 @@ class BankIDResponse
     const RFA21 = 'RFA21';
     const RFA22 = 'RFA22';
 
-    public $status = self::STATUS_PENDING;
-    public $message = '';
-    public $body = null;
+    private $status = self::STATUS_PENDING;
+    private $message = '';
+    private $body = null;
 
     public function __construct($status, $body = null)
     {
@@ -131,5 +131,30 @@ class BankIDResponse
 
                 break;
         }
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
+     * @return null|object
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 }
