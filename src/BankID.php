@@ -29,7 +29,6 @@ class BankID
     {
         $httpOptions = [
             'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v5/',
-            'verify' => false,
             'cert' => $certificate,
             'headers' => [
                 'Content-Type' => 'application/json',
