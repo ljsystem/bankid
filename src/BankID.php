@@ -55,15 +55,17 @@ class BankID
      *
      * @param $personalNumber
      *
+     * @param $ip
+     *
      * @return BankIDResponse
      */
-    public function authenticate($personalNumber)
+    public function authenticate($personalNumber, $ip)
     {
         try {
             $httpResponse = $this->httpClient->post('auth', [
                 RequestOptions::JSON => [
                     'personalNumber' => $personalNumber,
-                    'endUserIp' => request()->ip(),
+                    'endUserIp' => $ip,
                 ],
             ]);
         } catch (RequestException $e) {
