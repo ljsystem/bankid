@@ -1,0 +1,17 @@
+{
+    "name": "ljsystem/bankid",
+    "description": "Library for the Swedish BankID API",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^7.1",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "LJSystem\\BankID\\": "src"
+        }
+    }
+}
