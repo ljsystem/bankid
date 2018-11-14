@@ -27,6 +27,10 @@ class BankID
 
     /**
      * BankID constructor.
+     *
+     * @param        $certificate
+     * @param null   $rootCertificate
+     * @param string $environment
      */
     public function __construct($certificate, $rootCertificate = null, $environment = self::ENVIRONMENT_PRODUCTION)
     {
