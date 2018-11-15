@@ -48,11 +48,16 @@ class BankIDResponse
     private $status = self::STATUS_PENDING;
     private $message = '';
     private $body = null;
+    private $orderRef = null;
 
     public function __construct($status, $body = null)
     {
         $this->status = $status;
         $this->body = $body;
+
+        if ($this->body && isset($this->body['orderRef'])) {
+            $this->orderRef = $this->body['orderRef'];
+        }
 
         switch ($this->status) {
             case self::STATUS_PENDING:
@@ -156,5 +161,13 @@ class BankIDResponse
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getOrderRef()
+    {
+        return $this->orderRef;
     }
 }
