@@ -96,12 +96,7 @@ class BankID
 
         $httpResponseBody = json_decode($httpResponse->getBody(), true);
 
-        switch ($httpResponseBody['status']) {
-            case BankIDResponse::STATUS_COMPLETE:
-                return new BankIDResponse(BankIDResponse::STATUS_COMPLETE, $httpResponseBody);
-            default:
-                return new BankIDResponse($httpResponseBody['status'], $httpResponseBody);
-        }
+        return new BankIDResponse($httpResponseBody['status'], $httpResponseBody);
     }
 
     /**
