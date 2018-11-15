@@ -64,23 +64,23 @@ class BankIDResponse
                 if (isset($body['hintCode'])) {
                     switch ($body['hintCode']) {
                         case self::HINT_CODE_NO_CLIENT:
-                            $this->message = __('bankid.'.self::RFA1);
+                            $this->message = 'bankid.'.self::RFA1;
 
                             break;
                         case self::HINT_CODE_USER_SIGN:
-                            $this->message = __('bankid.'.self::RFA9);
+                            $this->message = 'bankid.'.self::RFA9;
 
                             break;
                         case self::HINT_CODE_OUTSTANDING_TRANSACTION:
-                            $this->message = __('bankid.'.self::RFA13);
+                            $this->message = 'bankid.'.self::RFA13;
 
                             break;
                         case self::HINT_CODE_STARTED:
-                            $this->message = __('bankid.'.self::RFA14B);
+                            $this->message = 'bankid.'.self::RFA14B;
 
                             break;
                         default:
-                            $this->message = __('bankid.'.self::RFA21);
+                            $this->message = 'bankid.'.self::RFA21;
 
                             break;
                     }
@@ -91,44 +91,44 @@ class BankIDResponse
                 if (isset($body['hintCode'])) {
                     switch ($body['hintCode']) {
                         case self::HINT_CODE_USER_CANCEL:
-                            $this->message = __('bankid.'.self::RFA6);
+                            $this->message = 'bankid.'.self::RFA6;
 
                             break;
                         case self::HINT_CODE_EXPIRED_TRANSACTION:
-                            $this->message = __('bankid.'.self::RFA8);
+                            $this->message = 'bankid.'.self::RFA8;
 
                             break;
                         case self::HINT_CODE_CERTIFICATE_ERROR:
-                            $this->message = __('bankid.'.self::RFA16);
+                            $this->message = 'bankid.'.self::RFA16;
 
                             break;
                         case self::HINT_CODE_START_FAILED:
-                            $this->message = __('bankid.'.self::RFA17);
+                            $this->message = 'bankid.'.self::RFA17;
 
                             break;
                         default:
-                            $this->message = __('bankid.'.self::RFA22);
+                            $this->message = 'bankid.'.self::RFA22;
 
                             break;
                     }
                 } elseif (isset($body['errorCode'])) {
                     switch ($body['errorCode']) {
                         case self::ERROR_CODE_CANCELED:
-                            $this->message = __('bankid.'.self::RFA3);
+                            $this->message = 'bankid.'.self::RFA3;
 
                             break;
                         case self::ERROR_CODE_ALREADY_IN_PROGRESS:
-                            $this->message = __('bankid.'.self::RFA4);
+                            $this->message = 'bankid.'.self::RFA4;
 
                             break;
                         case self::ERROR_CODE_REQUEST_TIMEOUT:
                         case self::ERROR_CODE_MAINTENANCE:
                         case self::ERROR_CODE_INTERNAL_ERROR:
-                            $this->message = __('bankid.'.self::RFA5);
+                            $this->message = 'bankid.'.self::RFA5;
 
                             break;
                         default:
-                            $this->message = __('bankid.'.self::RFA22);
+                            $this->message = 'bankid.'.self::RFA22;
 
                             break;
                     }
@@ -137,7 +137,6 @@ class BankIDResponse
                 break;
         }
     }
-
 
     /**
      * @return string
