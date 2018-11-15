@@ -56,8 +56,8 @@ class BankIDResponse
 
         switch ($this->status) {
             case self::STATUS_PENDING:
-                if (isset($body->hintCode)) {
-                    switch ($body->hintCode) {
+                if (isset($body['hintCode'])) {
+                    switch ($body['hintCode']) {
                         case self::HINT_CODE_NO_CLIENT:
                             $this->message = __('bankid.'.self::RFA1);
 
@@ -83,8 +83,8 @@ class BankIDResponse
 
                 break;
             case self::STATUS_FAILED:
-                if (isset($body->hintCode)) {
-                    switch ($body->hintCode) {
+                if (isset($body['hintCode'])) {
+                    switch ($body['hintCode']) {
                         case self::HINT_CODE_USER_CANCEL:
                             $this->message = __('bankid.'.self::RFA6);
 
@@ -106,8 +106,8 @@ class BankIDResponse
 
                             break;
                     }
-                } elseif (isset($body->errorCode)) {
-                    switch ($body->errorCode) {
+                } elseif (isset($body['errorCode'])) {
+                    switch ($body['errorCode']) {
                         case self::ERROR_CODE_CANCELED:
                             $this->message = __('bankid.'.self::RFA3);
 
@@ -143,7 +143,7 @@ class BankIDResponse
     }
 
     /**
-     * @return null|object
+     * @return null|array
      */
     public function getBody()
     {

@@ -70,7 +70,7 @@ class BankID
             return self::requestExceptionToBankIDResponse($e);
         }
 
-        $httpResponseBody = json_decode($httpResponse->getBody());
+        $httpResponseBody = json_decode($httpResponse->getBody(), true);
 
         return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
     }
@@ -94,13 +94,13 @@ class BankID
             return self::requestExceptionToBankIDResponse($e);
         }
 
-        $httpResponseBody = json_decode($httpResponse->getBody());
+        $httpResponseBody = json_decode($httpResponse->getBody(), true);
 
-        switch ($httpResponseBody->status) {
+        switch ($httpResponseBody['status']) {
             case BankIDResponse::STATUS_COMPLETE:
                 return new BankIDResponse(BankIDResponse::STATUS_COMPLETE, $httpResponseBody);
             default:
-                return new BankIDResponse($httpResponseBody->status, $httpResponseBody);
+                return new BankIDResponse($httpResponseBody['status'], $httpResponseBody);
         }
     }
 
@@ -123,7 +123,7 @@ class BankID
             return self::requestExceptionToBankIDResponse($e);
         }
 
-        $httpResponseBody = json_decode($httpResponse->getBody());
+        $httpResponseBody = json_decode($httpResponse->getBody(), true);
 
         return new BankIDResponse(BankIDResponse::STATUS_OK, $httpResponseBody);
     }
@@ -137,7 +137,7 @@ class BankID
      */
     private static function requestExceptionToBankIDResponse(RequestException $e)
     {
-        $httpResponseBody = json_decode($e->getResponse()->getBody());
+        $httpResponseBody = json_decode($e->getResponse()->getBody(), true);
 
         return new BankIDResponse(BankIDResponse::STATUS_FAILED, $httpResponseBody);
     }
