@@ -49,6 +49,7 @@ class BankIDResponse
     private $message = '';
     private $body = null;
     private $orderRef = null;
+    private $personalNumber = null;
 
     /**
      * BankIDResponse constructor.
@@ -63,6 +64,10 @@ class BankIDResponse
 
         if ($this->body && isset($this->body['orderRef'])) {
             $this->orderRef = $this->body['orderRef'];
+        }
+
+        if ($this->body && isset($this->body['completionData']['user']['personalNumber'])) {
+            $this->personalNumber = $this->body['completionData']['user']['personalNumber'];
         }
 
         switch ($this->status) {
@@ -174,5 +179,13 @@ class BankIDResponse
     public function getOrderRef()
     {
         return $this->orderRef;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getPersonalNumber()
+    {
+        return $this->personalNumber;
     }
 }
