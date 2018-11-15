@@ -50,6 +50,12 @@ class BankIDResponse
     private $body = null;
     private $orderRef = null;
 
+    /**
+     * BankIDResponse constructor.
+     *
+     * @param string $status
+     * @param null|array $body
+     */
     public function __construct($status, $body = null)
     {
         $this->status = $status;
