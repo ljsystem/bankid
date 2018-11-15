@@ -21,24 +21,29 @@ class BankID
     /**
      * BankID constructor.
      *
-     * @param        $certificate
-     * @param null   $rootCertificate
      * @param string $environment
+     * @param string $certificate
+     * @param string $rootCertificate
      */
-    public function __construct($certificate, $rootCertificate = null, $environment = self::ENVIRONMENT_TEST)
+    public function __construct($environment = self::ENVIRONMENT_TEST, $certificate = null, $rootCertificate = null)
     {
+        if (! $certificate) {
+            $certificate = __DIR__.'/../certs/test.pem';
+        }
+
+        if (! $rootCertificate) {
+            $rootCertificate = __DIR__.'/../certs/test_cacert.pem';
+        }
+
         $httpOptions = [
             'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v5/',
             'cert' => $certificate,
+            'verify' => $rootCertificate,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ],
         ];
-
-        if ($rootCertificate) {
-            $httpOptions['verify'] = $rootCertificate;
-        }
 
         $this->httpClient = new Client($httpOptions);
     }

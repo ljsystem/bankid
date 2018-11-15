@@ -12,8 +12,8 @@ return [
         ],
 
         BankID::ENVIRONMENT_TEST => [
-            'certificate' => env('BANKID_CERTIFICATE', resource_path('/certificates/bankid/public/test.pem')),
-            'root_certificate' => env('BANKID_ROOT_CERTIFICATE', resource_path('/certificates/bankid/public/test_cacert.pem')),
+            'certificate' => null,
+            'root_certificate' => null,
         ],
     ],
 ];
