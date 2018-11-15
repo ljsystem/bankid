@@ -9,43 +9,41 @@ use GuzzleHttp\Exception\RequestException;
 class BankID
 {
     const ENVIRONMENT_PRODUCTION = 'prod';
-    const HOST_PRODUCTION = 'appapi2.bankid.com';
-
     const ENVIRONMENT_TEST = 'test';
-    const HOST_TEST = 'appapi2.test.bankid.com';
 
-    const ENVIRONMENTS = [
-        self::ENVIRONMENT_PRODUCTION => [
-            'host' => self::HOST_PRODUCTION,
-        ],
-        self::ENVIRONMENT_TEST => [
-            'host' => self::HOST_TEST,
-        ],
+    const HOSTS = [
+        self::ENVIRONMENT_PRODUCTION => 'appapi2.bankid.com',
+        self::ENVIRONMENT_TEST => 'appapi2.test.bankid.com',
     ];
 
     private $httpClient;
 
     /**
      * BankID constructor.
+     *
+     * @param string $environment
+     * @param string $certificate
+     * @param string $rootCertificate
      */
-    public function __construct($certificate, $rootCertificate = null, $environment = self::ENVIRONMENT_PRODUCTION)
+    public function __construct($environment = self::ENVIRONMENT_TEST, $certificate = null, $rootCertificate = null)
     {
+        if (! $certificate) {
+            $certificate = __DIR__.'/../certs/test.pem';
+        }
+
+        if (! $rootCertificate) {
+            $rootCertificate = __DIR__.'/../certs/test_cacert.pem';
+        }
+
         $httpOptions = [
-            'base_uri' => 'https://'.self::ENVIRONMENTS[$environment]['host'].'/rp/v5/',
-            'verify' => false,
-            'cert' => [
-                $certificate,
-                '',
-            ],
+            'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v5/',
+            'cert' => $certificate,
+            'verify' => $rootCertificate,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ],
         ];
-
-        if ($rootCertificate) {
-            $httpOptions['verify'] = $rootCertificate;
-        }
 
         $this->httpClient = new Client($httpOptions);
     }
@@ -55,45 +53,50 @@ class BankID
      *
      * @param $personalNumber
      *
+     * @param $ip
+     *
      * @return BankIDResponse
      */
-    public function authenticate($personalNumber, $orderReference = null)
+    public function authenticate($personalNumber, $ip)
     {
-        if (! $orderReference) {
-            try {
-                $httpResponse = $this->httpClient->post('auth', [
-                    RequestOptions::JSON => [
-                        'personalNumber' => $personalNumber,
-                        'endUserIp' => request()->ip(),
-                    ],
-                ]);
-            } catch (RequestException $e) {
-                return self::requestExceptionToBankIDResponse($e);
-            }
-
-            $httpResponseBody = json_decode($httpResponse->getBody());
-
-            return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
-        } else {
-            try {
-                $httpResponse = $this->httpClient->post('collect', [
-                    RequestOptions::JSON => [
-                        'orderRef' => $orderReference,
-                    ],
-                ]);
-            } catch (RequestException $e) {
-                return self::requestExceptionToBankIDResponse($e);
-            }
-
-            $httpResponseBody = json_decode($httpResponse->getBody());
-
-            switch ($httpResponseBody->status) {
-                case BankIDResponse::STATUS_COMPLETE:
-                    return new BankIDResponse(BankIDResponse::STATUS_COMPLETE, $httpResponseBody);
-                default:
-                    return new BankIDResponse($httpResponseBody->status, $httpResponseBody);
-            }
+        try {
+            $httpResponse = $this->httpClient->post('auth', [
+                RequestOptions::JSON => [
+                    'personalNumber' => $personalNumber,
+                    'endUserIp' => $ip,
+                ],
+            ]);
+        } catch (RequestException $e) {
+            return self::requestExceptionToBankIDResponse($e);
         }
+
+        $httpResponseBody = json_decode($httpResponse->getBody(), true);
+
+        return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
+    }
+
+    /**
+     * Collect an ongoing user request.
+     *
+     * @param $orderReference
+     *
+     * @return BankIDResponse
+     */
+    public function collect($orderReference)
+    {
+        try {
+            $httpResponse = $this->httpClient->post('collect', [
+                RequestOptions::JSON => [
+                    'orderRef' => $orderReference,
+                ],
+            ]);
+        } catch (RequestException $e) {
+            return self::requestExceptionToBankIDResponse($e);
+        }
+
+        $httpResponseBody = json_decode($httpResponse->getBody(), true);
+
+        return new BankIDResponse($httpResponseBody['status'], $httpResponseBody);
     }
 
     /**
@@ -115,7 +118,7 @@ class BankID
             return self::requestExceptionToBankIDResponse($e);
         }
 
-        $httpResponseBody = json_decode($httpResponse->getBody());
+        $httpResponseBody = json_decode($httpResponse->getBody(), true);
 
         return new BankIDResponse(BankIDResponse::STATUS_OK, $httpResponseBody);
     }
@@ -129,7 +132,7 @@ class BankID
      */
     private static function requestExceptionToBankIDResponse(RequestException $e)
     {
-        $httpResponseBody = json_decode($e->getResponse()->getBody());
+        $httpResponseBody = json_decode($e->getResponse()->getBody(), true);
 
         return new BankIDResponse(BankIDResponse::STATUS_FAILED, $httpResponseBody);
     }
