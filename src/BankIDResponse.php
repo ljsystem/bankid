@@ -48,8 +48,6 @@ class BankIDResponse
     private $status = self::STATUS_PENDING;
     private $message = '';
     private $body = null;
-    private $orderRef = null;
-    private $personalNumber = null;
 
     /**
      * BankIDResponse constructor.
@@ -61,14 +59,6 @@ class BankIDResponse
     {
         $this->status = $status;
         $this->body = $body;
-
-        if ($this->body && isset($this->body['orderRef'])) {
-            $this->orderRef = $this->body['orderRef'];
-        }
-
-        if ($this->body && isset($this->body['completionData']['user']['personalNumber'])) {
-            $this->personalNumber = $this->body['completionData']['user']['personalNumber'];
-        }
 
         switch ($this->status) {
             case self::STATUS_PENDING:
@@ -178,7 +168,7 @@ class BankIDResponse
      */
     public function getOrderRef()
     {
-        return $this->orderRef;
+        return $this->body['orderRef'] ?? null;
     }
 
     /**
@@ -186,6 +176,30 @@ class BankIDResponse
      */
     public function getPersonalNumber()
     {
-        return $this->personalNumber;
+        return $this->body['completionData']['user']['personalNumber'] ?? null;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getErrorCode()
+    {
+        return $this->body['errorCode'] ?? null;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getErrorDetails()
+    {
+        return $this->body['details'] ?? null;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getHintCode()
+    {
+        return $this->body['hintCode'] ?? null;
     }
 }
