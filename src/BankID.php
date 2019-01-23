@@ -76,7 +76,7 @@ class BankID
                 ],
             ]);
         } catch (RequestException $e) {
-            return self::requestExceptionToBankIDResponse($e);
+            return $this->requestExceptionToBankIDResponse($e);
         }
 
         $httpResponseBody = json_decode($httpResponse->getBody(), true);
@@ -111,7 +111,7 @@ class BankID
                 RequestOptions::JSON => $parameters,
             ]);
         } catch (RequestException $e) {
-            return self::requestExceptionToBankIDResponse($e);
+            return $this->requestExceptionToBankIDResponse($e);
         }
 
         $httpResponseBody = json_decode($httpResponse->getBody(), true);
@@ -135,7 +135,7 @@ class BankID
                 ],
             ]);
         } catch (RequestException $e) {
-            return self::requestExceptionToBankIDResponse($e);
+            return $this->requestExceptionToBankIDResponse($e);
         }
 
         $httpResponseBody = json_decode($httpResponse->getBody(), true);
@@ -159,7 +159,7 @@ class BankID
                 ],
             ]);
         } catch (RequestException $e) {
-            return self::requestExceptionToBankIDResponse($e);
+            return $this->requestExceptionToBankIDResponse($e);
         }
 
         $httpResponseBody = json_decode($httpResponse->getBody(), true);
@@ -174,7 +174,7 @@ class BankID
      *
      * @return BankIDResponse
      */
-    private static function requestExceptionToBankIDResponse(RequestException $e)
+    private function requestExceptionToBankIDResponse(RequestException $e)
     {
         $httpResponseBody = json_decode($e->getResponse()->getBody(), true);
 
