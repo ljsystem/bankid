@@ -176,8 +176,12 @@ class BankID
      */
     private function requestExceptionToBankIDResponse(RequestException $e)
     {
-        $httpResponseBody = json_decode($e->getResponse()->getBody(), true);
+        $body = $e->hasResponse() ? $e->getResponse()->getBody() : null;
 
-        return new BankIDResponse(BankIDResponse::STATUS_FAILED, $httpResponseBody);
+        if ($body) {
+            return new BankIDResponse(BankIDResponse::STATUS_FAILED, json_decode($body, true));
+        }
+
+        return new BankIDResponse(BankIDResponse::STATUS_FAILED, ['errorMessage' => $e->getMessage()]);
     }
 }
