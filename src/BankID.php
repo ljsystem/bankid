@@ -76,6 +76,38 @@ class BankID
     }
 
     /**
+     * Start a sign-order.
+     *
+     * @param $personalNumber
+     *
+     * @param $ip
+     *
+     * @param $userVisibleData
+     *
+     * @param $userNonVisibleData
+     *
+     * @return BankIDResponse
+     */
+    public function sign($personalNumber, $ip, $userVisibleData = '', $userNonVisibleData = '') {
+        try {
+            $httpResponse = $this->httpClient->post('sign', [
+                RequestOptions::JSON => [
+                    'personalNumber' => $personalNumber,
+                    'endUserIp' => $ip,
+                    'userVisibleData' => $userVisibleData,
+                    'userNonVisibleData' => $userNonVisibleData,
+                ],
+            ]);
+        } catch (RequestException $e) {
+            return self::requestExceptionToBankIDResponse($e);
+        }
+
+        $httpResponseBody = json_decode($httpResponse->getBody(), true);
+
+        return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
+    }
+
+    /**
      * Collect an ongoing user request.
      *
      * @param $orderReference
