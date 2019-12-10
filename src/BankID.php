@@ -52,7 +52,6 @@ class BankID
      * Authenticate a user using their personal number.
      *
      * @param $personalNumber
-     *
      * @param $ip
      *
      * @return BankIDResponse
@@ -65,6 +64,41 @@ class BankID
                     'personalNumber' => $personalNumber,
                     'endUserIp' => $ip,
                 ],
+            ]);
+        } catch (RequestException $e) {
+            return self::requestExceptionToBankIDResponse($e);
+        }
+
+        $httpResponseBody = json_decode($httpResponse->getBody(), true);
+
+        return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
+    }
+
+    /**
+     * Request a signing order for a user.
+     *
+     * @param $personalNumber
+     * @param $ip
+     * @param $userVisibleData
+     * @param $userNonVisibleData
+     *
+     * @return BankIDResponse
+     */
+    public function sign($personalNumber, $ip, $userVisibleData = '', $userNonVisibleData = NULL)
+    {
+        try {
+            $parameters = [
+                'personalNumber' => $personalNumber,
+                'endUserIp' => $ip,
+                'userVisibleData' => base64_encode($userVisibleData),
+            ];
+
+            if (!empty($userNonVisibleData)) {
+                $parameters['userNonVisibleData'] = base64_encode($userNonVisibleData);
+            }
+
+            $httpResponse = $this->httpClient->post('sign', [
+                RequestOptions::JSON => $parameters,
             ]);
         } catch (RequestException $e) {
             return self::requestExceptionToBankIDResponse($e);
