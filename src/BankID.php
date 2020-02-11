@@ -33,6 +33,10 @@ class BankID
             $certificate = __DIR__.'/../certs/test.pem';
         }
 
+        if (! $passphrase) {
+            $certificate = [$certificate, $passphrase];
+        }
+
         if (! $rootCertificate) {
             $rootCertificate = __DIR__.'/../certs/test_cacert.pem';
         }
@@ -47,13 +51,11 @@ class BankID
             ],
         ];
 
-        if (!is_null($key)) {
+        if (! $key) {
             $httpOptions['ssl_key'] = $key;
         }
 
-        if (!is_null($passphrase)) {
-            $httpOptions['cert'] = [$certificate, $passphrase];
-        }
+        
 
         $this->httpClient = new Client($httpOptions);
     }
