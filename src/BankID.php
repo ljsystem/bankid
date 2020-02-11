@@ -55,8 +55,6 @@ class BankID
             $httpOptions['ssl_key'] = $key;
         }
 
-        
-
         $this->httpClient = new Client($httpOptions);
     }
 
