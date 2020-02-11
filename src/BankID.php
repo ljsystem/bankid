@@ -29,7 +29,7 @@ class BankID
      */
     public function __construct($environment = self::ENVIRONMENT_TEST, $certificate = null, $rootCertificate = null, $key = null, $passphrase = null)
     {
-        if (! $certificate) {
+        if (is_null($certificate)) {
             $certificate = __DIR__.'/../certs/test.pem';
         }
 
@@ -37,7 +37,7 @@ class BankID
             $certificate = [$certificate, $passphrase];
         }
 
-        if (! $rootCertificate) {
+        if (is_null($rootCertificate)) {
             $rootCertificate = __DIR__.'/../certs/test_cacert.pem';
         }
 
