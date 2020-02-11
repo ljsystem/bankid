@@ -24,11 +24,17 @@ class BankID
      * @param string $environment
      * @param string $certificate
      * @param string $rootCertificate
+     * @param string $key
+     * @param string $passphrase
      */
-    public function __construct($environment = self::ENVIRONMENT_TEST, $certificate = null, $rootCertificate = null)
+    public function __construct($environment = self::ENVIRONMENT_TEST, $certificate = null, $rootCertificate = null, $key = null, $passphrase = null)
     {
         if (! $certificate) {
             $certificate = __DIR__.'/../certs/test.pem';
+        }
+
+        if (! is_null($passphrase)) {
+            $certificate = [$certificate, $passphrase];
         }
 
         if (! $rootCertificate) {
@@ -44,6 +50,12 @@ class BankID
                 'Accept' => 'application/json',
             ],
         ];
+
+        if (! is_null($key)) {
+            $httpOptions['ssl_key'] = $key;
+        }
+
+        
 
         $this->httpClient = new Client($httpOptions);
     }
