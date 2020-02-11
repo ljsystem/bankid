@@ -33,7 +33,7 @@ class BankID
             $certificate = __DIR__.'/../certs/test.pem';
         }
 
-        if (! $passphrase) {
+        if (! is_null($passphrase)) {
             $certificate = [$certificate, $passphrase];
         }
 
@@ -51,7 +51,7 @@ class BankID
             ],
         ];
 
-        if (! $key) {
+        if (! is_null($key)) {
             $httpOptions['ssl_key'] = $key;
         }
 
