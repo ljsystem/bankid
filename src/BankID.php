@@ -23,11 +23,11 @@ class BankID
      *
      * @param string $environment
      * @param string $certificate
-     * @param string $rootCertificate
+     * @param string $caCertificate
      * @param string $key
      * @param string $passphrase
      */
-    public function __construct($environment = self::ENVIRONMENT_TEST, $certificate = null, $rootCertificate = null, $key = null, $passphrase = null)
+    public function __construct($environment = self::ENVIRONMENT_TEST, $certificate = null, $caCertificate = null, $key = null, $passphrase = null)
     {
         if (is_null($certificate)) {
             $certificate = __DIR__.'/../certs/test.pem';
@@ -37,14 +37,14 @@ class BankID
             $certificate = [$certificate, $passphrase];
         }
 
-        if (is_null($rootCertificate)) {
-            $rootCertificate = __DIR__.'/../certs/test_cacert.pem';
+        if (is_null($caCertificate)) {
+            $caCertificate = __DIR__.'/../certs/test_cacert.cer';
         }
 
         $httpOptions = [
             'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v5/',
             'cert' => $certificate,
-            'verify' => $rootCertificate,
+            'verify' => $caCertificate,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
