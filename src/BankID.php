@@ -68,12 +68,17 @@ class BankID
      */
     public function authenticate($personalNumber, $ip)
     {
+        $payload['endUserIp'] = $ip;
+
+        if (!empty($personalNumber)) {
+            $payload['personalNumber'] = $personalNumber;
+        }
+
         try {
+
+
             $httpResponse = $this->httpClient->post('auth', [
-                RequestOptions::JSON => [
-                    'personalNumber' => $personalNumber,
-                    'endUserIp' => $ip,
-                ],
+                RequestOptions::JSON => $payload,
             ]);
         } catch (RequestException $e) {
             return $this->requestExceptionToBankIDResponse($e);
@@ -98,10 +103,13 @@ class BankID
     {
         try {
             $parameters = [
-                'personalNumber' => $personalNumber,
                 'endUserIp' => $ip,
                 'userVisibleData' => base64_encode($userVisibleData),
             ];
+
+            if (!empty($personalNumber)) {
+                $parameters['personalNumber'] = $personalNumber;
+            }
 
             if (!empty($userNonVisibleData)) {
                 $parameters['userNonVisibleData'] = base64_encode($userNonVisibleData);
