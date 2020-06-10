@@ -202,4 +202,12 @@ class BankIDResponse
     {
         return $this->body['hintCode'] ?? null;
     }
+
+    /**
+     * @return null|string
+     */
+    public function getAutoStartToken()
+    {
+        return $this->body['autoStartToken'] ?? null;
+    }
 }
