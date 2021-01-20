@@ -16,6 +16,8 @@ class BankID
         self::ENVIRONMENT_TEST => 'appapi2.test.bankid.com',
     ];
 
+    const BANKIDAPI_VERSION = 'v5.1';
+
     private $httpClient;
 
     /**
@@ -26,8 +28,9 @@ class BankID
      * @param string $caCertificate
      * @param string $key
      * @param string $passphrase
+     * @param string $api_version
      */
-    public function __construct($environment = self::ENVIRONMENT_TEST, $certificate = null, $caCertificate = null, $key = null, $passphrase = null)
+    public function __construct($environment = self::ENVIRONMENT_TEST, $certificate = null, $caCertificate = null, $key = null, $passphrase = null, $api_version = self::BANKIDAPI_VERSION.'/')
     {
         if (is_null($certificate)) {
             $certificate = __DIR__.'/../certs/test.pem';
@@ -42,7 +45,7 @@ class BankID
         }
 
         $httpOptions = [
-            'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v5/',
+            'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/'.self::BANKIDAPI_VERSION,
             'cert' => $certificate,
             'verify' => $caCertificate,
             'headers' => [
@@ -75,8 +78,6 @@ class BankID
         }
 
         try {
-
-
             $httpResponse = $this->httpClient->post('auth', [
                 RequestOptions::JSON => $payload,
             ]);
