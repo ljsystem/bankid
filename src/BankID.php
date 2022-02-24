@@ -23,27 +23,37 @@ class BankID
      *
      * @param string $environment
      * @param string $certificate
-     * @param string $rootCertificate
+     * @param string $caCertificate
+     * @param string $key
+     * @param string $passphrase
      */
-    public function __construct($environment = self::ENVIRONMENT_TEST, $certificate = null, $rootCertificate = null)
+    public function __construct($environment = self::ENVIRONMENT_TEST, $certificate = null, $caCertificate = null, $key = null, $passphrase = null)
     {
-        if (! $certificate) {
+        if (is_null($certificate)) {
             $certificate = __DIR__.'/../certs/test.pem';
         }
 
-        if (! $rootCertificate) {
-            $rootCertificate = __DIR__.'/../certs/test_cacert.pem';
+        if (! is_null($passphrase)) {
+            $certificate = [$certificate, $passphrase];
+        }
+
+        if (is_null($caCertificate)) {
+            $caCertificate = __DIR__.'/../certs/test_cacert.cer';
         }
 
         $httpOptions = [
             'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v5/',
             'cert' => $certificate,
-            'verify' => $rootCertificate,
+            'verify' => $caCertificate,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ],
         ];
+
+        if (! is_null($key)) {
+            $httpOptions['ssl_key'] = $key;
+        }
 
         $this->httpClient = new Client($httpOptions);
     }
@@ -58,15 +68,58 @@ class BankID
      */
     public function authenticate($personalNumber, $ip)
     {
+        $payload['endUserIp'] = $ip;
+
+        if (!empty($personalNumber)) {
+            $payload['personalNumber'] = $personalNumber;
+        }
+
         try {
+
+
             $httpResponse = $this->httpClient->post('auth', [
-                RequestOptions::JSON => [
-                    'personalNumber' => $personalNumber,
-                    'endUserIp' => $ip,
-                ],
+                RequestOptions::JSON => $payload,
             ]);
         } catch (RequestException $e) {
-            return self::requestExceptionToBankIDResponse($e);
+            return $this->requestExceptionToBankIDResponse($e);
+        }
+
+        $httpResponseBody = json_decode($httpResponse->getBody(), true);
+
+        return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
+    }
+
+    /**
+     * Request a signing order for a user.
+     *
+     * @param $personalNumber
+     * @param $ip
+     * @param $userVisibleData
+     * @param $userNonVisibleData
+     *
+     * @return BankIDResponse
+     */
+    public function sign($personalNumber, $ip, $userVisibleData = '', $userNonVisibleData = NULL)
+    {
+        try {
+            $parameters = [
+                'endUserIp' => $ip,
+                'userVisibleData' => base64_encode($userVisibleData),
+            ];
+
+            if (!empty($personalNumber)) {
+                $parameters['personalNumber'] = $personalNumber;
+            }
+
+            if (!empty($userNonVisibleData)) {
+                $parameters['userNonVisibleData'] = base64_encode($userNonVisibleData);
+            }
+
+            $httpResponse = $this->httpClient->post('sign', [
+                RequestOptions::JSON => $parameters,
+            ]);
+        } catch (RequestException $e) {
+            return $this->requestExceptionToBankIDResponse($e);
         }
 
         $httpResponseBody = json_decode($httpResponse->getBody(), true);
@@ -125,7 +178,7 @@ class BankID
                 ],
             ]);
         } catch (RequestException $e) {
-            return self::requestExceptionToBankIDResponse($e);
+            return $this->requestExceptionToBankIDResponse($e);
         }
 
         $httpResponseBody = json_decode($httpResponse->getBody(), true);
@@ -149,7 +202,7 @@ class BankID
                 ],
             ]);
         } catch (RequestException $e) {
-            return self::requestExceptionToBankIDResponse($e);
+            return $this->requestExceptionToBankIDResponse($e);
         }
 
         $httpResponseBody = json_decode($httpResponse->getBody(), true);
@@ -164,10 +217,14 @@ class BankID
      *
      * @return BankIDResponse
      */
-    private static function requestExceptionToBankIDResponse(RequestException $e)
+    private function requestExceptionToBankIDResponse(RequestException $e)
     {
-        $httpResponseBody = json_decode($e->getResponse()->getBody(), true);
+        $body = $e->hasResponse() ? $e->getResponse()->getBody() : null;
 
-        return new BankIDResponse(BankIDResponse::STATUS_FAILED, $httpResponseBody);
+        if ($body) {
+            return new BankIDResponse(BankIDResponse::STATUS_FAILED, json_decode($body, true));
+        }
+
+        return new BankIDResponse(BankIDResponse::STATUS_FAILED, ['errorMessage' => $e->getMessage()]);
     }
 }
