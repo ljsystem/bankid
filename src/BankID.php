@@ -42,7 +42,7 @@ class BankID
         }
 
         $httpOptions = [
-            'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v5/',
+            'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v5.1/',
             'cert' => $certificate,
             'verify' => $caCertificate,
             'headers' => [
