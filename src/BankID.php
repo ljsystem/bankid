@@ -42,7 +42,7 @@ class BankID
         }
 
         $httpOptions = [
-            'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v5/',
+            'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v5.1/',
             'cert' => $certificate,
             'verify' => $caCertificate,
             'headers' => [
@@ -58,16 +58,16 @@ class BankID
         $this->httpClient = new Client($httpOptions);
     }
 
-    /**
-     * Authenticate a user using their personal number.
-     *
-     * @param $personalNumber
-     * @param $ip
-     *
-     * @return BankIDResponse
-     */
-    public function authenticate($personalNumber, $ip)
-    {
+  /**
+   * Authenticate a user using their personal number.
+   *
+   * @param $personalNumber
+   * @param $ip
+   *
+   * @return BankIDResponse
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+    public function authenticate($personalNumber, $ip): BankIDResponse {
         $payload['endUserIp'] = $ip;
 
         if (!empty($personalNumber)) {
@@ -89,18 +89,18 @@ class BankID
         return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
     }
 
-    /**
-     * Request a signing order for a user.
-     *
-     * @param $personalNumber
-     * @param $ip
-     * @param $userVisibleData
-     * @param $userNonVisibleData
-     *
-     * @return BankIDResponse
-     */
-    public function sign($personalNumber, $ip, $userVisibleData = '', $userNonVisibleData = NULL)
-    {
+  /**
+   * Request a signing order for a user.
+   *
+   * @param $personalNumber
+   * @param $ip
+   * @param $userVisibleData
+   * @param $userNonVisibleData
+   *
+   * @return BankIDResponse
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+    public function sign($personalNumber, $ip, $userVisibleData = '', $userNonVisibleData = NULL): BankIDResponse {
         try {
             $parameters = [
                 'endUserIp' => $ip,
@@ -127,15 +127,15 @@ class BankID
         return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
     }
 
-    /**
-     * Collect an ongoing user request.
-     *
-     * @param $orderReference
-     *
-     * @return BankIDResponse
-     */
-    public function collect($orderReference)
-    {
+  /**
+   * Collect an ongoing user request.
+   *
+   * @param $orderReference
+   *
+   * @return BankIDResponse
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+    public function collect($orderReference): BankIDResponse {
         try {
             $httpResponse = $this->httpClient->post('collect', [
                 RequestOptions::JSON => [
@@ -151,15 +151,15 @@ class BankID
         return new BankIDResponse($httpResponseBody['status'], $httpResponseBody);
     }
 
-    /**
-     * Cancel an ongoing order per the users request.
-     *
-     * @param $orderReference
-     *
-     * @return BankIDResponse
-     */
-    public function cancel($orderReference)
-    {
+  /**
+   * Cancel an ongoing order per the users request.
+   *
+   * @param $orderReference
+   *
+   * @return BankIDResponse
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+    public function cancel($orderReference): BankIDResponse {
         try {
             $httpResponse = $this->httpClient->post('cancel', [
                 RequestOptions::JSON => [
@@ -182,8 +182,7 @@ class BankID
      *
      * @return BankIDResponse
      */
-    private function requestExceptionToBankIDResponse(RequestException $e)
-    {
+    private function requestExceptionToBankIDResponse(RequestException $e): BankIDResponse {
         $body = $e->hasResponse() ? $e->getResponse()->getBody() : null;
 
         if ($body) {
