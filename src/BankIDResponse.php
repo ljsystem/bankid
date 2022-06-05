@@ -142,40 +142,35 @@ class BankIDResponse
     /**
      * @return string
      */
-    public function getMessage()
-    {
+    public function getMessage(): string {
         return $this->message;
     }
 
     /**
      * @return null|array
      */
-    public function getBody()
-    {
+    public function getBody(): ?array {
         return $this->body;
     }
 
     /**
      * @return string
      */
-    public function getStatus()
-    {
+    public function getStatus(): string {
         return $this->status;
     }
 
     /**
      * @return null|string
      */
-    public function getOrderRef()
-    {
+    public function getOrderRef(): ?string {
         return $this->body['orderRef'] ?? null;
     }
 
     /**
      * @return null|string
      */
-    public function getPersonalNumber()
-    {
+    public function getPersonalNumber(): ?string {
         return $this->body['completionData']['user']['personalNumber'] ?? null;
     }
 
@@ -190,24 +185,21 @@ class BankIDResponse
     /**
      * @return null|string
      */
-    public function getErrorDetails()
-    {
+    public function getErrorDetails(): ?string {
         return $this->body['details'] ?? null;
     }
 
     /**
      * @return null|string
      */
-    public function getHintCode()
-    {
+    public function getHintCode(): ?string {
         return $this->body['hintCode'] ?? null;
     }
 
     /**
      * @return null|string
      */
-    public function getAutoStartToken()
-    {
+    public function getAutoStartToken(): ?string {
         return $this->body['autoStartToken'] ?? null;
     }
 }
