@@ -42,7 +42,7 @@ class BankID
         }
 
         $httpOptions = [
-            'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v5/',
+            'base_uri' => 'https://'.self::HOSTS[$environment].'/rp/v6.0/',
             'cert' => $certificate,
             'verify' => $caCertificate,
             'headers' => [
@@ -58,25 +58,38 @@ class BankID
         $this->httpClient = new Client($httpOptions);
     }
 
-    /**
-     * Authenticate a user using their personal number.
+	/**
+     * Authenticate a user using animated QR code.
      *
-     * @param $personalNumber
-     * @param $ip
-     *
-     * @return BankIDResponse
-     */
-    public function authenticate($personalNumber, $ip)
+	 * @param $endUserIp
+	 * @param $requirement
+	 * @param $userVisibleData
+	 * @param $userNonVisibleData
+	 * @param $userVisibleDataFormat
+	 *
+	 * @return BankIDResponse
+	 */
+    public function authenticate($endUserIp, $requirement = null, $userVisibleData = null, $userNonVisibleData = null, $userVisibleDataFormat = null)
     {
-        $payload['endUserIp'] = $ip;
+        $payload['endUserIp'] = $endUserIp;
 
-        if (!empty($personalNumber)) {
-            $payload['personalNumber'] = $personalNumber;
+        if (!empty($requirement)) {
+            $payload['requirement'] = $requirement;
+        }
+
+        if (!empty($userVisibleData)) {
+            $payload['userVisibleData'] = base64_encode($userVisibleData);
+        }
+
+        if (!empty($userNonVisibleData)) {
+            $payload['userNonVisibleData'] = base64_encode($userNonVisibleData);
+        }
+
+        if (!empty($userVisibleDataFormat)) {
+            $payload['userVisibleDataFormat'] = $userVisibleDataFormat;
         }
 
         try {
-
-
             $httpResponse = $this->httpClient->post('auth', [
                 RequestOptions::JSON => $payload,
             ]);
@@ -89,34 +102,39 @@ class BankID
         return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
     }
 
-    /**
+	/**
      * Request a signing order for a user.
      *
-     * @param $personalNumber
-     * @param $ip
-     * @param $userVisibleData
-     * @param $userNonVisibleData
-     *
-     * @return BankIDResponse
-     */
-    public function sign($personalNumber, $ip, $userVisibleData = '', $userNonVisibleData = NULL)
+	 * @param $endUserIp
+	 * @param $userVisibleData
+	 * @param $userNonVisibleData
+	 * @param $requirement
+	 * @param $userVisibleDataFormat
+	 *
+	 * @return BankIDResponse
+	 */
+    public function sign($endUserIp, $userVisibleData, $requirement = null, $userNonVisibleData = null, $userVisibleDataFormat = null)
     {
         try {
-            $parameters = [
-                'endUserIp' => $ip,
+            $payload = [
+                'endUserIp' => $endUserIp,
                 'userVisibleData' => base64_encode($userVisibleData),
             ];
 
-            if (!empty($personalNumber)) {
-                $parameters['personalNumber'] = $personalNumber;
+            if (!empty($requirement)) {
+                $payload['requirement'] = $requirement;
             }
 
             if (!empty($userNonVisibleData)) {
-                $parameters['userNonVisibleData'] = base64_encode($userNonVisibleData);
+                $payload['userNonVisibleData'] = base64_encode($userNonVisibleData);
+            }
+
+            if (!empty($userVisibleDataFormat)) {
+                $payload['userVisibleDataFormat'] = $userVisibleDataFormat;
             }
 
             $httpResponse = $this->httpClient->post('sign', [
-                RequestOptions::JSON => $parameters,
+                RequestOptions::JSON => $payload,
             ]);
         } catch (RequestException $e) {
             return $this->requestExceptionToBankIDResponse($e);
@@ -126,6 +144,100 @@ class BankID
 
         return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
     }
+
+	/**
+	 * Authenticate a user over phone.
+	 *
+	 * @param $personalNumber
+	 * @param $callInitiator
+	 * @param $requirement
+	 * @param $userVisibleData
+	 * @param $userNonVisibleData
+	 * @param $userVisibleDataFormat
+	 *
+	 * @return void
+	 */
+	public function phoneAuth($personalNumber, $callInitiator, $requirement = null, $userVisibleData = null, $userNonVisibleData = null, $userVisibleDataFormat = null) {
+        try {
+            $payload = [
+                'personalNumber' => $personalNumber,
+                'callInitiator' => $callInitiator,
+            ];
+
+            if (!empty($requirement)) {
+                $payload['requirement'] = $requirement;
+            }
+
+            if (!empty($userVisibleData)) {
+                $payload['userVisibleData'] = base64_encode($userVisibleData);
+            }
+
+            if (!empty($userNonVisibleData)) {
+                $payload['userNonVisibleData'] = base64_encode($userNonVisibleData);
+            }
+
+            if (!empty($userVisibleDataFormat)) {
+                $payload['userVisibleDataFormat'] = $userVisibleDataFormat;
+            }
+
+            $httpResponse = $this->httpClient->post('phone/auth', [
+                RequestOptions::JSON => $payload,
+            ]);
+        } catch (RequestException $e) {
+            return $this->requestExceptionToBankIDResponse($e);
+        }
+
+        $httpResponseBody = json_decode($httpResponse->getBody(), true);
+
+        return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
+	}
+
+	/**
+	 * Request a signing order for a user over the phone.
+	 *
+	 * @param $personalNumber
+	 * @param $callInitiator
+	 * @param $requirement
+	 * @param $userVisibleData
+	 * @param $userNonVisibleData
+	 * @param $userVisibleDataFormat
+	 *
+	 * @return void
+	 */
+	public function phoneSign($personalNumber, $callInitiator, $requirement = null, $userVisibleData = null, $userNonVisibleData = null, $userVisibleDataFormat = null) {
+        try {
+            $payload = [
+                'personalNumber' => $personalNumber,
+                'callInitiator' => $callInitiator,
+            ];
+
+            if (!empty($requirement)) {
+                $payload['requirement'] = $requirement;
+            }
+
+            if (!empty($userVisibleData)) {
+                $payload['userVisibleData'] = base64_encode($userVisibleData);
+            }
+
+            if (!empty($userNonVisibleData)) {
+                $payload['userNonVisibleData'] = base64_encode($userNonVisibleData);
+            }
+
+            if (!empty($userVisibleDataFormat)) {
+                $payload['userVisibleDataFormat'] = $userVisibleDataFormat;
+            }
+
+            $httpResponse = $this->httpClient->post('phone/sign', [
+                RequestOptions::JSON => $payload,
+            ]);
+        } catch (RequestException $e) {
+            return $this->requestExceptionToBankIDResponse($e);
+        }
+
+        $httpResponseBody = json_decode($httpResponse->getBody(), true);
+
+        return new BankIDResponse(BankIDResponse::STATUS_PENDING, $httpResponseBody);
+	}
 
     /**
      * Collect an ongoing user request.
