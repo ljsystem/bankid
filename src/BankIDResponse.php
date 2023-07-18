@@ -17,12 +17,19 @@ class BankIDResponse
     const HINT_CODE_STARTED = 'started';
     const HINT_CODE_CERTIFICATE_ERROR = 'certificateErr';
     const HINT_CODE_START_FAILED = 'startFailed';
+    const HINT_CODE_USER_MRTD = 'userMrtd';
+    const HINT_CODE_USER_CALL_CONFIRM = 'userCallConfirm';
 
     const ERROR_CODE_CANCELED = 'canceled';
     const ERROR_CODE_ALREADY_IN_PROGRESS = 'alreadyInProgress';
     const ERROR_CODE_REQUEST_TIMEOUT = 'requestTimeout';
     const ERROR_CODE_MAINTENANCE = 'maintenance';
     const ERROR_CODE_INTERNAL_ERROR = 'internalError';
+    const ERROR_CODE_INVALID_PARAMETERS = 'invalidParameters';
+    const ERROR_CODE_UNAUTHORIZED = 'unauthorized';
+    const ERROR_CODE_NOT_FOUND = 'notFound';
+    const ERROR_CODE_METHOD_NOT_ALLOWED = 'methodNotAllowed';
+    const ERROR_CODE_UNSUPPORTED_MEDIA_TYPE = 'unsupportedMediaType';
 
     const RFA1 = 'RFA1';
     const RFA2 = 'RFA2';
@@ -38,12 +45,14 @@ class BankIDResponse
     const RFA15A = 'RFA15-A';
     const RFA15B = 'RFA15-B';
     const RFA16 = 'RFA16';
-    const RFA17 = 'RFA17';
+    const RFA17A = 'RFA17-A';
+    const RFA17B = 'RFA17-B';
     const RFA18 = 'RFA18';
     const RFA19 = 'RFA19';
     const RFA20 = 'RFA20';
     const RFA21 = 'RFA21';
     const RFA22 = 'RFA22';
+    const RFA23 = 'RFA23';
 
     private $status = self::STATUS_PENDING;
     private $message = '';
@@ -80,6 +89,10 @@ class BankIDResponse
                             $this->message = 'bankid.'.self::RFA14B;
 
                             break;
+                        case self::HINT_CODE_USER_MRTD:
+                            $this->message = 'bankid.'.self::RFA23;
+
+                            break;
                         default:
                             $this->message = 'bankid.'.self::RFA21;
 
@@ -104,7 +117,7 @@ class BankIDResponse
 
                             break;
                         case self::HINT_CODE_START_FAILED:
-                            $this->message = 'bankid.'.self::RFA17;
+                            $this->message = 'bankid.'.self::RFA17B;
 
                             break;
                         default:
