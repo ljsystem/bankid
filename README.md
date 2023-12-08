@@ -61,7 +61,7 @@ To get human readable messages from the lang folder you can do:
 public function convertMessage(BankIDResponse $bankId, string $locale)
 {
   [$file, $key] = explode('.', $bankId->getMessage());
-  $locale = in_array($locale, ['sv', 'en']) ? $locale : 'sv';
+  if(!in_array($locale, ['sv', 'en']) $locale = 'sv';
   $path = base_path("vendor/ljsystem/bankid/lang/".$locale.'/'. $file. '.php');
   $messages = include($path);
   return $messages[$key];
