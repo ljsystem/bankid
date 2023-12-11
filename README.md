@@ -54,6 +54,19 @@ And here is how to use it together with a passphrase:
 ```php
 $bankId = new BankID('prod', '/path/to/prod.pem', '/path/to/prod_cacert.cer', null, 'key-passphrase');
 ```
+### Messages
+
+To get human readable messages from the lang folder you can do:
+```php
+public function convertMessage(BankIDResponse $bankId, string $locale)
+{
+  [$file, $key] = explode('.', $bankId->getMessage());
+  if(!in_array($locale, ['sv', 'en']) $locale = 'sv';
+  $path = base_path("vendor/ljsystem/bankid/lang/".$locale.'/'. $file. '.php');
+  $messages = include($path);
+  return $messages[$key];
+}
+```
 
 ## Security
 
