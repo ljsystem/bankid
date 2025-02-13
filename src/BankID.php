@@ -31,6 +31,7 @@ class BankID
     {
         if (is_null($certificate)) {
             $certificate = __DIR__.'/../certs/test.pem';
+            $passphrase = 'qwerty123';
         }
 
         if (! is_null($passphrase)) {
